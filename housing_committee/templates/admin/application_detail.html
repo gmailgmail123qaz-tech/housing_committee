@@ -1,0 +1,139 @@
+{% extends 'admin/base_admin.html' %}
+{% block title %}Обращение #{{ application.id }} — Администрирование{% endblock %}
+{% block page_title %}Обращение #{{ application.id }}{% endblock %}
+
+{% block content %}
+<div class="detail-layout">
+  <!-- LEFT: info -->
+  <div class="detail-main">
+    <div class="detail-card">
+      <div class="detail-header">
+        <div class="detail-meta">
+          <span class="status-badge status-{{ application.status }}">
+            {% if application.status == 'new' %}🔵 Новое
+            {% elif application.status == 'in_progress' %}🟡 В работе
+            {% elif application.status == 'resolved' %}🟢 Решено
+            {% else %}🔴 Отклонено{% endif %}
+          </span>
+          <span class="detail-type">{{ application.app_type_label }}</span>
+          <span class="detail-date">{{ application.created_at.strftime('%d.%m.%Y %H:%M') }}</span>
+        </div>
+        <h2 class="detail-subject">{{ application.subject }}</h2>
+      </div>
+
+      <div class="detail-author-row">
+        <div class="author-avatar">{{ (application.user.full_name or application.user.username)[0].upper() }}</div>
+        <div>
+          <div class="author-name">{{ application.user.full_name or application.user.username }}</div>
+          <div class="author-info">@{{ application.user.username }} · {{ application.user.email }}</div>
+        </div>
+      </div>
+
+      <div class="detail-body">
+        <h3 class="section-label">Текст обращения</h3>
+        <div class="body-text">{{ application.body }}</div>
+      </div>
+
+      {% if application.admin_reply %}
+      <div class="detail-reply">
+        <h3 class="section-label">Ответ администратора</h3>
+        <div class="reply-text">{{ application.admin_reply }}</div>
+        {% if application.resolved_at %}
+        <div class="reply-date">Дата ответа: {{ application.resolved_at.strftime('%d.%m.%Y %H:%M') }}</div>
+        {% endif %}
+      </div>
+      {% endif %}
+    </div>
+
+    <!-- Reply form -->
+    <div class="detail-card">
+      <h3 class="card-title">Обработка обращения</h3>
+      <form method="post">
+        <div class="form-row">
+          <label class="form-label">Статус</label>
+          <select name="status" class="form-select">
+            <option value="new" {% if application.status=='new' %}selected{% endif %}>🔵 Новое</option>
+            <option value="in_progress" {% if application.status=='in_progress' %}selected{% endif %}>🟡 В работе</option>
+            <option value="resolved" {% if application.status=='resolved' %}selected{% endif %}>🟢 Решено</option>
+            <option value="rejected" {% if application.status=='rejected' %}selected{% endif %}>🔴 Отклонено</option>
+          </select>
+        </div>
+        <div class="form-row">
+          <label class="form-label">Ответ заявителю</label>
+          <textarea name="reply" class="form-textarea" rows="5" placeholder="Введите ответ на обращение...">{{ application.admin_reply or '' }}</textarea>
+        </div>
+        <div class="form-actions">
+          <button type="submit" class="btn-primary">💾 Сохранить</button>
+          <a href="{{ url_for('admin_applications') }}" class="btn-back">← Назад к списку</a>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- RIGHT: sidebar -->
+  <aside class="detail-sidebar">
+    <div class="sidebar-card">
+      <h4 class="sidebar-title">Информация</h4>
+      <dl class="info-list">
+        <dt>ID</dt><dd>#{{ application.id }}</dd>
+        <dt>Тип</dt><dd>{{ application.app_type_label }}</dd>
+        <dt>Подано</dt><dd>{{ application.created_at.strftime('%d.%m.%Y') }}</dd>
+        <dt>Статус</dt><dd>{{ application.status }}</dd>
+        {% if application.resolved_at %}
+        <dt>Закрыто</dt><dd>{{ application.resolved_at.strftime('%d.%m.%Y') }}</dd>
+        {% endif %}
+      </dl>
+    </div>
+    <div class="sidebar-card">
+      <h4 class="sidebar-title">Заявитель</h4>
+      <dl class="info-list">
+        <dt>ФИО</dt><dd>{{ application.user.full_name or '—' }}</dd>
+        <dt>Логин</dt><dd>@{{ application.user.username }}</dd>
+        <dt>Email</dt><dd>{{ application.user.email }}</dd>
+        <dt>Роль</dt><dd>{{ application.user.role }}</dd>
+      </dl>
+      <a href="{{ url_for('admin_message_thread', user_id=application.user.id) }}" class="btn-msg">💬 Написать</a>
+    </div>
+  </aside>
+</div>
+
+<style>
+.detail-layout{display:grid;grid-template-columns:1fr 280px;gap:1.5rem}
+@media(max-width:900px){.detail-layout{grid-template-columns:1fr}}
+.detail-card{background:var(--bg-card);border:1px solid var(--border);border-radius:10px;padding:1.5rem;margin-bottom:1.25rem}
+.detail-header{margin-bottom:1.25rem}
+.detail-meta{display:flex;align-items:center;gap:.75rem;flex-wrap:wrap;margin-bottom:.75rem}
+.status-badge{display:inline-flex;align-items:center;padding:.25rem .65rem;border-radius:12px;font-size:.8rem;font-weight:700}
+.status-new{background:#dbeafe;color:#1d4ed8}.status-in_progress{background:#fef3c7;color:#b45309}
+.status-resolved{background:#dcfce7;color:#166534}.status-rejected{background:#fee2e2;color:#b91c1c}
+.detail-type{font-size:.8rem;padding:.2rem .55rem;background:var(--bg);border:1px solid var(--border);border-radius:10px;color:var(--text-muted)}
+.detail-date{font-size:.8rem;color:var(--text-muted);margin-left:auto}
+.detail-subject{font-size:1.25rem;font-weight:700;color:var(--text);margin:0}
+.detail-author-row{display:flex;align-items:center;gap:.85rem;padding:.85rem;background:var(--bg);border-radius:8px;margin-bottom:1.25rem}
+.author-avatar{width:40px;height:40px;border-radius:50%;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:1.1rem;flex-shrink:0}
+.author-name{font-weight:600}
+.author-info{font-size:.8rem;color:var(--text-muted)}
+.section-label{font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--text-muted);margin:0 0 .6rem}
+.body-text{line-height:1.7;white-space:pre-wrap;color:var(--text)}
+.detail-reply{margin-top:1.25rem;padding-top:1.25rem;border-top:1px solid var(--border)}
+.reply-text{background:var(--bg);border-left:3px solid var(--accent);padding:.75rem 1rem;border-radius:0 6px 6px 0;line-height:1.6;white-space:pre-wrap}
+.reply-date{margin-top:.5rem;font-size:.8rem;color:var(--text-muted)}
+.card-title{font-size:1rem;font-weight:700;margin:0 0 1.25rem}
+.form-row{margin-bottom:1rem}
+.form-label{display:block;font-size:.8rem;font-weight:600;color:var(--text-muted);margin-bottom:.4rem;text-transform:uppercase;letter-spacing:.05em}
+.form-select,.form-textarea{width:100%;padding:.55rem .75rem;border:1px solid var(--border);border-radius:6px;font-size:.9rem;background:var(--bg);color:var(--text);font-family:inherit}
+.form-select:focus,.form-textarea:focus{outline:none;border-color:var(--accent)}
+.form-actions{display:flex;align-items:center;gap:.75rem;margin-top:1.25rem}
+.btn-primary{padding:.55rem 1.25rem;background:var(--accent);color:#fff;border:none;border-radius:6px;font-size:.875rem;font-weight:600;cursor:pointer}
+.btn-primary:hover{opacity:.85}
+.btn-back{font-size:.85rem;color:var(--text-muted);text-decoration:none}
+.btn-back:hover{color:var(--text)}
+.sidebar-card{background:var(--bg-card);border:1px solid var(--border);border-radius:10px;padding:1.25rem;margin-bottom:1.25rem}
+.sidebar-title{font-size:.8rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--text-muted);margin:0 0 1rem}
+.info-list{margin:0;display:grid;grid-template-columns:auto 1fr;gap:.4rem .75rem}
+.info-list dt{font-size:.78rem;color:var(--text-muted);font-weight:600}
+.info-list dd{font-size:.85rem;color:var(--text);margin:0;word-break:break-word}
+.btn-msg{display:block;margin-top:1rem;padding:.45rem .85rem;background:transparent;color:var(--accent);border:1px solid var(--accent);border-radius:6px;font-size:.82rem;font-weight:600;text-align:center;text-decoration:none}
+.btn-msg:hover{background:var(--accent);color:#fff}
+</style>
+{% endblock %}

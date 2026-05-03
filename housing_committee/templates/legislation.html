@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block title %}Законодательство — Жилищный комитет{% endblock %}
+{% block content %}
+<div class="breadcrumbs"><div class="container"><ol><li><a href="{{ url_for('index') }}">Главная</a></li><li>Законодательство</li></ol></div></div>
+<div class="page-body">
+  <div class="container">
+    <div class="layout-sidebar">
+      <div>
+        <div class="page-title"><h1>Законодательство</h1><p>Нормативно-правовые акты в сфере жилищного законодательства</p></div>
+        {% if articles %}{% for a in articles %}
+        <div class="card mb-3" style="border-left:4px solid var(--gold);">
+          <div class="card-body">
+            <h2 style="font-size:20px;margin-bottom:10px;">{{ a.title }}</h2>
+            <div style="font-family:'PT Sans',sans-serif;font-size:12.5px;color:var(--text-muted);margin-bottom:14px;">📅 {{ a.published_at.strftime('%d.%m.%Y') }}{% if a.author_name %} · ✍️ {{ a.author_name }}{% endif %}</div>
+            <div class="article-content">{% for line in a.content.split('\n') %}{% if line.strip() %}<p>{{ line }}</p>{% endif %}{% endfor %}</div>
+          </div>
+        </div>
+        {% endfor %}{% else %}<div class="alert alert-info">Раздел находится в наполнении.</div>{% endif %}
+      </div>
+      <aside>
+        <div class="sidebar-block">
+          <div class="sidebar-block-title">Разделы</div>
+          <ul class="sidebar-links">
+            <li><a href="{{ url_for('services') }}">Услуги населению</a></li>
+            <li><a href="{{ url_for('documents') }}">Документы</a></li>
+            <li><a href="{{ url_for('legislation') }}" class="active">Законодательство</a></li>
+            <li><a href="{{ url_for('residents') }}">Жильцам</a></li>
+            <li><a href="{{ url_for('faq') }}">FAQ</a></li>
+          </ul>
+        </div>
+        <div class="card" style="border-top:3px solid var(--gold);"><div class="card-body"><p style="font-family:'PT Sans',sans-serif;font-size:14px;"><strong>Правовая консультация</strong></p><p style="font-size:13.5px;color:var(--text-muted);margin-top:6px;">Юрист комитета ведёт приём по вт и чт с 10:00 до 16:00.</p><a href="{{ url_for('contacts') }}" class="btn btn-secondary btn-sm w-100 mt-2">Адрес и график</a></div></div>
+      </aside>
+    </div>
+  </div>
+</div>
+{% endblock %}

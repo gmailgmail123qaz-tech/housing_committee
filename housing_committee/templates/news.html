@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% block title %}Новости — Жилищный комитет{% endblock %}
+{% block content %}
+<div class="breadcrumbs"><div class="container"><ol><li><a href="{{ url_for('index') }}">Главная</a></li><li>Новости</li></ol></div></div>
+<div class="page-body">
+  <div class="container">
+    <div class="page-title">
+      <h1>Новости и объявления</h1>
+      <p>Актуальная информация о деятельности Жилищного комитета</p>
+    </div>
+
+    <!-- Filters -->
+    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:24px;font-family:'PT Sans',sans-serif;">
+      <a href="{{ url_for('news') }}" class="btn {{ 'btn-primary' if not current_category else 'btn-secondary' }} btn-sm">Все</a>
+      {% for cat in categories %}
+        <a href="{{ url_for('news', category=cat) }}" class="btn {{ 'btn-primary' if current_category == cat else 'btn-secondary' }} btn-sm">{{ cat|capitalize }}</a>
+      {% endfor %}
+    </div>
+
+    {% if pagination.items %}
+      <div class="news-grid">
+        {% for item in pagination.items %}
+        <div class="card news-card">
+          <div class="card-body">
+            <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+              {% if item.category %}<span class="news-category">{{ item.category }}</span>{% endif %}
+              <span class="news-date">{{ item.published_at.strftime('%d.%m.%Y') }}</span>
+            </div>
+            <h3><a href="{{ url_for('news_detail', news_id=item.id) }}">{{ item.title }}</a></h3>
+            <p>{{ item.excerpt or item.content[:140] }}...</p>
+            {% if item.author_name %}<div style="font-family:'PT Sans',sans-serif;font-size:12px;color:var(--text-muted);margin-top:4px;">Источник: {{ item.author_name }}</div>{% endif %}
+            <a href="{{ url_for('news_detail', news_id=item.id) }}" style="font-family:'PT Sans',sans-serif;font-size:13px;color:var(--gold);font-weight:700;margin-top:8px;display:inline-block;">Читать далее →</a>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+
+      <!-- Pagination -->
+      {% if pagination.pages > 1 %}
+      <div class="pagination">
+        {% if pagination.has_prev %}
+          <a href="{{ url_for('news', page=pagination.prev_num, category=current_category) }}">‹ Назад</a>
+        {% else %}
+          <span class="disabled">‹ Назад</span>
+        {% endif %}
+        {% for p in pagination.iter_pages(left_edge=1,right_edge=1,left_current=2,right_current=2) %}
+          {% if p %}
+            <a href="{{ url_for('news', page=p, category=current_category) }}" class="{{ 'current' if p == pagination.page }}">{{ p }}</a>
+          {% else %}
+            <span>…</span>
+          {% endif %}
+        {% endfor %}
+        {% if pagination.has_next %}
+          <a href="{{ url_for('news', page=pagination.next_num, category=current_category) }}">Вперёд ›</a>
+        {% else %}
+          <span class="disabled">Вперёд ›</span>
+        {% endif %}
+      </div>
+      {% endif %}
+    {% else %}
+      <div class="alert alert-info">По данному фильтру новостей не найдено.</div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

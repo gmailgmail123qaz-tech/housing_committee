@@ -1,0 +1,172 @@
+{% extends "base.html" %}
+{% block title %}Жилищный комитет — Официальный портал{% endblock %}
+
+{% block content %}
+<!-- HERO -->
+<section class="hero">
+  <div class="container">
+    <div class="hero-content">
+      <h1>Жилищный комитет<br><span>— на защите ваших прав</span></h1>
+      <p>Государственный орган в сфере жилищно-коммунального хозяйства. Решаем жилищные вопросы, защищаем права граждан, обеспечиваем качество коммунальных услуг.</p>
+      <div class="hero-badges">
+        <div class="hero-badge"><span>🏛</span> Государственный орган</div>
+        <div class="hero-badge"><span>⚡</span> Ответ за 3 рабочих дня</div>
+        <div class="hero-badge"><span>🆓</span> Все услуги бесплатно</div>
+        <div class="hero-badge"><span>📱</span> Онлайн-обращения</div>
+      </div>
+      <div style="margin-top:28px;display:flex;gap:12px;flex-wrap:wrap;">
+        <a href="{{ url_for('apply') }}" class="btn btn-primary btn-lg">📝 Подать обращение</a>
+        <a href="{{ url_for('services') }}" class="btn btn-outline-light btn-lg">Все услуги →</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- QUICK ACCESS -->
+<section style="background:var(--cream);border-bottom:1px solid var(--border);padding:28px 0;">
+  <div class="container">
+    <div class="quick-grid">
+      <a href="{{ url_for('services') }}" class="quick-card">
+        <div class="quick-icon">🏠</div>
+        <div class="quick-title">Улучшение жилищных условий</div>
+      </a>
+      <a href="{{ url_for('services') }}#privatization" class="quick-card">
+        <div class="quick-icon">📋</div>
+        <div class="quick-title">Приватизация жилья</div>
+      </a>
+      <a href="{{ url_for('services') }}#subsidy" class="quick-card">
+        <div class="quick-icon">💰</div>
+        <div class="quick-title">Субсидии и льготы</div>
+      </a>
+      <a href="{{ url_for('documents') }}" class="quick-card">
+        <div class="quick-icon">📄</div>
+        <div class="quick-title">Документы и формы</div>
+      </a>
+      <a href="{{ url_for('apply') }}" class="quick-card">
+        <div class="quick-icon">✉️</div>
+        <div class="quick-title">Подать обращение</div>
+      </a>
+      <a href="{{ url_for('faq') }}" class="quick-card">
+        <div class="quick-icon">❓</div>
+        <div class="quick-title">Часто задаваемые вопросы</div>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- MAIN LAYOUT -->
+<section class="page-body">
+  <div class="container">
+    <div class="layout-sidebar">
+      <!-- LEFT: NEWS -->
+      <div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:22px;">
+          <h2 style="font-size:26px;">Последние новости</h2>
+          <a href="{{ url_for('news') }}" class="btn btn-secondary btn-sm">Все новости →</a>
+        </div>
+
+        {% if news %}
+          <!-- Featured news item -->
+          {% set first = news[0] %}
+          <div class="card mb-3" style="border-top:4px solid var(--gold);">
+            <div class="card-body">
+              <div style="display:flex;gap:12px;align-items:center;margin-bottom:10px;">
+                {% if first.category %}<span class="news-category">{{ first.category }}</span>{% endif %}
+                <span class="news-date">{{ first.published_at.strftime('%d.%m.%Y') }}</span>
+              </div>
+              <h3 style="font-size:20px;margin-bottom:10px;"><a href="{{ url_for('news_detail', news_id=first.id) }}">{{ first.title }}</a></h3>
+              <p style="color:var(--text-muted);">{{ first.excerpt or first.content[:180] }}...</p>
+              <a href="{{ url_for('news_detail', news_id=first.id) }}" class="btn btn-primary btn-sm mt-2">Читать далее</a>
+            </div>
+          </div>
+
+          <!-- Rest of news -->
+          <div class="news-grid" style="grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));">
+            {% for item in news[1:] %}
+            <div class="card news-card">
+              <div class="card-body">
+                <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+                  {% if item.category %}<span class="news-category">{{ item.category }}</span>{% endif %}
+                  <span class="news-date">{{ item.published_at.strftime('%d.%m.%Y') }}</span>
+                </div>
+                <h3><a href="{{ url_for('news_detail', news_id=item.id) }}">{{ item.title }}</a></h3>
+                <p>{{ item.excerpt or item.content[:100] }}...</p>
+                <a href="{{ url_for('news_detail', news_id=item.id) }}" style="font-family:'PT Sans',sans-serif;font-size:13px;color:var(--gold);font-weight:700;">Подробнее →</a>
+              </div>
+            </div>
+            {% endfor %}
+          </div>
+        {% else %}
+          <p class="text-muted">Новости появятся в ближайшее время.</p>
+        {% endif %}
+      </div>
+
+      <!-- RIGHT: SIDEBAR -->
+      <aside>
+        <!-- Contacts card -->
+        <div class="card sidebar-block">
+          <div class="card-header"><strong>📞 Контактная информация</strong></div>
+          <div class="card-body" style="font-family:'PT Sans',sans-serif;font-size:14px;">
+            <p><strong>Горячая линия:</strong><br><a href="tel:88001001010" style="font-size:16px;font-weight:700;color:var(--navy);">8-800-100-10-10</a><br><small style="color:var(--text-muted);">звонок бесплатный</small></p>
+            <hr style="margin:12px 0;border-color:var(--border);">
+            <p><strong>Приёмные часы:</strong><br>Пн–Пт: 9:00–18:00<br>Вт, Чт: приём граждан 10:00–16:00</p>
+            <hr style="margin:12px 0;border-color:var(--border);">
+            <p><strong>Адрес:</strong><br>ул. Советская, д. 1, каб. 101</p>
+            <a href="{{ url_for('contacts') }}" class="btn btn-secondary btn-sm w-100 mt-2">Все контакты</a>
+          </div>
+        </div>
+
+        <!-- Online services -->
+        <div class="card sidebar-block">
+          <div class="card-header"><strong>⚡ Электронные услуги</strong></div>
+          <div class="card-body" style="padding:10px 0;">
+            <ul class="sidebar-links" style="padding:0 20px;">
+              <li><a href="{{ url_for('apply') }}">📝 Подать обращение онлайн</a></li>
+              <li><a href="{{ url_for('cabinet') if current_user.is_authenticated else url_for('login') }}">👤 Личный кабинет</a></li>
+              <li><a href="{{ url_for('register') if not current_user.is_authenticated else url_for('cabinet') }}">🔐 Регистрация на портале</a></li>
+              <li><a href="{{ url_for('messages') if current_user.is_authenticated else url_for('login') }}">✉️ Написать в комитет</a></li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Quick links -->
+        <div class="sidebar-block">
+          <div class="sidebar-block-title">Разделы сайта</div>
+          <ul class="sidebar-links">
+            <li><a href="{{ url_for('services') }}">Услуги населению</a></li>
+            <li><a href="{{ url_for('documents') }}">Документы и формы</a></li>
+            <li><a href="{{ url_for('legislation') }}">Законодательство</a></li>
+            <li><a href="{{ url_for('residents') }}">Информация жильцам</a></li>
+            <li><a href="{{ url_for('faq') }}">Вопросы и ответы</a></li>
+            <li><a href="{{ url_for('about') }}">О комитете</a></li>
+          </ul>
+        </div>
+      </aside>
+    </div>
+  </div>
+</section>
+
+<!-- INFO BANNER -->
+<section style="background:var(--navy);padding:40px 0;margin-top:10px;">
+  <div class="container">
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:28px;text-align:center;">
+      <div>
+        <div style="font-family:'Playfair Display',serif;font-size:42px;font-weight:900;color:var(--gold);">15+</div>
+        <div style="font-family:'PT Sans',sans-serif;font-size:14px;color:rgba(255,255,255,0.7);margin-top:4px;">лет работы комитета</div>
+      </div>
+      <div>
+        <div style="font-family:'Playfair Display',serif;font-size:42px;font-weight:900;color:var(--gold);">24/7</div>
+        <div style="font-family:'PT Sans',sans-serif;font-size:14px;color:rgba(255,255,255,0.7);margin-top:4px;">аварийная служба</div>
+      </div>
+      <div>
+        <div style="font-family:'Playfair Display',serif;font-size:42px;font-weight:900;color:var(--gold);">98%</div>
+        <div style="font-family:'PT Sans',sans-serif;font-size:14px;color:rgba(255,255,255,0.7);margin-top:4px;">обращений рассмотрено в срок</div>
+      </div>
+      <div>
+        <div style="font-family:'Playfair Display',serif;font-size:42px;font-weight:900;color:var(--gold);">1 200</div>
+        <div style="font-family:'PT Sans',sans-serif;font-size:14px;color:rgba(255,255,255,0.7);margin-top:4px;">домов под контролем</div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

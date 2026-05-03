@@ -1,0 +1,117 @@
+{% extends 'admin/base_admin.html' %}
+{% block title %}Обращения — Администрирование{% endblock %}
+{% block page_title %}Обращения граждан{% endblock %}
+
+{% block content %}
+<div class="admin-toolbar">
+  <form method="get" class="filter-form">
+    <label class="filter-label">Статус:</label>
+    <select name="status" onchange="this.form.submit()" class="filter-select">
+      <option value="">Все обращения</option>
+      <option value="new" {% if request.args.get('status')=='new' %}selected{% endif %}>🔵 Новые</option>
+      <option value="in_progress" {% if request.args.get('status')=='in_progress' %}selected{% endif %}>🟡 В работе</option>
+      <option value="resolved" {% if request.args.get('status')=='resolved' %}selected{% endif %}>🟢 Решены</option>
+      <option value="rejected" {% if request.args.get('status')=='rejected' %}selected{% endif %}>🔴 Отклонены</option>
+    </select>
+    <label class="filter-label" style="margin-left:1rem">Тип:</label>
+    <select name="type" onchange="this.form.submit()" class="filter-select">
+      <option value="">Все типы</option>
+      <option value="repair" {% if request.args.get('type')=='repair' %}selected{% endif %}>Ремонт</option>
+      <option value="utility" {% if request.args.get('type')=='utility' %}selected{% endif %}>Коммунальные услуги</option>
+      <option value="noise" {% if request.args.get('type')=='noise' %}selected{% endif %}>Шум</option>
+      <option value="parking" {% if request.args.get('type')=='parking' %}selected{% endif %}>Парковка</option>
+      <option value="landscaping" {% if request.args.get('type')=='landscaping' %}selected{% endif %}>Благоустройство</option>
+      <option value="document" {% if request.args.get('type')=='document' %}selected{% endif %}>Документы</option>
+      <option value="complaint" {% if request.args.get('type')=='complaint' %}selected{% endif %}>Жалоба</option>
+      <option value="suggestion" {% if request.args.get('type')=='suggestion' %}selected{% endif %}>Предложение</option>
+      <option value="other" {% if request.args.get('type')=='other' %}selected{% endif %}>Прочее</option>
+    </select>
+    <button type="submit" class="btn-filter">Применить</button>
+    {% if request.args.get('status') or request.args.get('type') %}
+      <a href="/admin/applications" class="btn-reset">Сбросить</a>
+    {% endif %}
+  </form>
+  <div class="toolbar-stats">
+    Всего: <strong>{{ applications|length }}</strong>
+  </div>
+</div>
+
+{% if applications %}
+<div class="admin-table-wrap">
+  <table class="admin-table">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Дата</th>
+        <th>Заявитель</th>
+        <th>Тема</th>
+        <th>Тип</th>
+        <th>Статус</th>
+        <th>Действие</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for app in applications %}
+      <tr class="row-{{ app.status }}">
+        <td class="td-id">{{ app.id }}</td>
+        <td class="td-date">{{ app.created_at.strftime('%d.%m.%Y') }}</td>
+        <td class="td-user">
+          <span class="user-name">{{ app.user.full_name or app.user.username }}</span>
+          <span class="user-login">@{{ app.user.username }}</span>
+        </td>
+        <td class="td-subject">{{ app.subject[:60] }}{% if app.subject|length > 60 %}…{% endif %}</td>
+        <td class="td-type">
+          <span class="type-chip">{{ app.app_type_label }}</span>
+        </td>
+        <td class="td-status">
+          <span class="status-badge status-{{ app.status }}">
+            {% if app.status == 'new' %}Новое
+            {% elif app.status == 'in_progress' %}В работе
+            {% elif app.status == 'resolved' %}Решено
+            {% else %}Отклонено{% endif %}
+          </span>
+        </td>
+        <td class="td-action">
+          <a href="{{ url_for('admin_application_detail', app_id=app.id) }}" class="btn-view">Открыть →</a>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% else %}
+<div class="admin-empty">
+  <p>Обращений по выбранным фильтрам не найдено.</p>
+</div>
+{% endif %}
+
+<style>
+.admin-toolbar{display:flex;align-items:center;gap:.5rem;flex-wrap:wrap;margin-bottom:1.5rem;padding:1rem 1.25rem;background:var(--bg-card);border-radius:8px;border:1px solid var(--border)}
+.filter-label{font-size:.85rem;color:var(--text-muted);font-weight:500}
+.filter-select{padding:.35rem .6rem;border:1px solid var(--border);border-radius:6px;font-size:.85rem;background:var(--bg);color:var(--text);cursor:pointer}
+.btn-filter,.btn-reset{padding:.35rem .85rem;border-radius:6px;font-size:.8rem;font-weight:600;cursor:pointer;text-decoration:none}
+.btn-filter{background:var(--accent);color:#fff;border:none}
+.btn-reset{background:transparent;color:var(--text-muted);border:1px solid var(--border)}
+.toolbar-stats{margin-left:auto;font-size:.85rem;color:var(--text-muted)}
+.admin-table-wrap{overflow-x:auto}
+.admin-table{width:100%;border-collapse:collapse;font-size:.875rem}
+.admin-table th{padding:.75rem 1rem;text-align:left;font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--text-muted);background:var(--bg-card);border-bottom:2px solid var(--border)}
+.admin-table td{padding:.75rem 1rem;border-bottom:1px solid var(--border);vertical-align:middle}
+.admin-table tr:hover td{background:var(--bg-card)}
+.td-id{color:var(--text-muted);font-size:.8rem;width:3rem}
+.td-date{white-space:nowrap;color:var(--text-muted)}
+.td-user{display:flex;flex-direction:column;gap:.1rem}
+.user-name{font-weight:600}
+.user-login{font-size:.75rem;color:var(--text-muted)}
+.td-subject{max-width:260px}
+.type-chip{display:inline-block;padding:.2rem .55rem;background:var(--bg);border:1px solid var(--border);border-radius:12px;font-size:.75rem;color:var(--text-muted)}
+.status-badge{display:inline-flex;align-items:center;padding:.25rem .6rem;border-radius:12px;font-size:.75rem;font-weight:700}
+.status-new{background:#dbeafe;color:#1d4ed8}
+.status-in_progress{background:#fef3c7;color:#b45309}
+.status-resolved{background:#dcfce7;color:#166534}
+.status-rejected{background:#fee2e2;color:#b91c1c}
+.btn-view{padding:.3rem .75rem;background:var(--accent);color:#fff;border-radius:6px;font-size:.8rem;font-weight:600;text-decoration:none;white-space:nowrap}
+.btn-view:hover{opacity:.85}
+.admin-empty{text-align:center;padding:3rem;color:var(--text-muted)}
+</style>
+{% endblock %}

@@ -1,0 +1,51 @@
+{% extends 'admin/base_admin.html' %}
+{% block title %}Сообщения — Администрирование{% endblock %}
+{% block page_title %}Переписка с пользователями{% endblock %}
+
+{% block content %}
+{% if dialogs %}
+<div class="dialogs-list">
+  {% for item in dialogs %}
+  <a href="{{ url_for('admin_message_thread', user_id=item.user.id) }}" class="dialog-row {% if item.unread %}dialog-unread{% endif %}">
+    <div class="dialog-avatar">{{ (item.user.full_name or item.user.username)[0].upper() }}</div>
+    <div class="dialog-info">
+      <div class="dialog-top">
+        <span class="dialog-name">{{ item.user.full_name or item.user.username }}</span>
+        <span class="dialog-login">@{{ item.user.username }}</span>
+        <span class="dialog-time">{{ item.last_message.created_at.strftime('%d.%m %H:%M') }}</span>
+      </div>
+      <div class="dialog-preview">{{ item.last_message.body[:90] }}{% if item.last_message.body|length > 90 %}…{% endif %}</div>
+    </div>
+    {% if item.unread %}
+    <div class="dialog-badge">{{ item.unread }}</div>
+    {% endif %}
+    <div class="dialog-arrow">→</div>
+  </a>
+  {% endfor %}
+</div>
+{% else %}
+<div class="admin-empty">
+  <div class="empty-icon">💬</div>
+  <p>Нет активных диалогов</p>
+</div>
+{% endif %}
+
+<style>
+.dialogs-list{border:1px solid var(--border);border-radius:10px;overflow:hidden}
+.dialog-row{display:flex;align-items:center;gap:1rem;padding:1rem 1.25rem;border-bottom:1px solid var(--border);text-decoration:none;color:inherit;transition:background .15s}
+.dialog-row:last-child{border-bottom:none}
+.dialog-row:hover{background:var(--bg-card)}
+.dialog-unread{background:color-mix(in srgb,var(--accent) 5%,transparent)}
+.dialog-avatar{width:44px;height:44px;border-radius:50%;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:1.1rem;flex-shrink:0}
+.dialog-info{flex:1;min-width:0}
+.dialog-top{display:flex;align-items:baseline;gap:.5rem;margin-bottom:.3rem;flex-wrap:wrap}
+.dialog-name{font-weight:700;color:var(--text)}
+.dialog-login{font-size:.8rem;color:var(--text-muted)}
+.dialog-time{font-size:.78rem;color:var(--text-muted);margin-left:auto}
+.dialog-preview{font-size:.85rem;color:var(--text-muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dialog-badge{background:var(--accent);color:#fff;border-radius:12px;padding:.15rem .5rem;font-size:.75rem;font-weight:700;flex-shrink:0}
+.dialog-arrow{color:var(--text-muted);font-size:1rem;flex-shrink:0}
+.admin-empty{text-align:center;padding:4rem;color:var(--text-muted)}
+.empty-icon{font-size:2.5rem;margin-bottom:.75rem}
+</style>
+{% endblock %}

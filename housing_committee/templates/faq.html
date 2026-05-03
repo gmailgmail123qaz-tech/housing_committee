@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% block title %}Часто задаваемые вопросы — Жилищный комитет{% endblock %}
+{% block content %}
+<div class="breadcrumbs"><div class="container"><ol><li><a href="{{ url_for('index') }}">Главная</a></li><li>FAQ</li></ol></div></div>
+<div class="page-body">
+  <div class="container">
+    <div class="layout-sidebar">
+      <div>
+        <div class="page-title"><h1>Часто задаваемые вопросы</h1><p>Ответы на наиболее распространённые обращения граждан</p></div>
+        {% if articles %}
+        <div style="display:flex;flex-direction:column;gap:8px;">
+          {% for a in articles %}
+          <details class="card" style="border-left:4px solid var(--gold);cursor:pointer;" id="faq-{{ loop.index }}">
+            <summary style="padding:16px 20px;font-family:'Playfair Display',serif;font-size:18px;font-weight:700;color:var(--navy);list-style:none;display:flex;justify-content:space-between;align-items:flex-start;gap:12px;">
+              <span>{{ a.title }}</span>
+              <span style="font-size:20px;flex-shrink:0;color:var(--gold);">▾</span>
+            </summary>
+            <div style="padding:0 20px 20px;">
+              <div style="font-family:'PT Sans',sans-serif;font-size:12.5px;color:var(--text-muted);margin-bottom:12px;">📅 {{ a.published_at.strftime('%d.%m.%Y') }}</div>
+              <div class="article-content">{% for line in a.content.split('\n') %}{% if line.strip() %}<p>{{ line }}</p>{% endif %}{% endfor %}</div>
+            </div>
+          </details>
+          {% endfor %}
+        </div>
+        {% else %}<div class="alert alert-info">Раздел находится в наполнении.</div>{% endif %}
+      </div>
+      <aside>
+        <div class="sidebar-block">
+          <div class="sidebar-block-title">Разделы</div>
+          <ul class="sidebar-links">
+            <li><a href="{{ url_for('services') }}">Услуги населению</a></li>
+            <li><a href="{{ url_for('documents') }}">Документы</a></li>
+            <li><a href="{{ url_for('legislation') }}">Законодательство</a></li>
+            <li><a href="{{ url_for('residents') }}">Жильцам</a></li>
+            <li><a href="{{ url_for('faq') }}" class="active">FAQ</a></li>
+          </ul>
+        </div>
+        <div class="card" style="border-top:3px solid var(--gold);">
+          <div class="card-body">
+            <p style="font-family:'PT Sans',sans-serif;font-size:14px;"><strong>Не нашли ответ?</strong></p>
+            <p style="font-size:13.5px;color:var(--text-muted);margin-top:6px;">Задайте вопрос напрямую — мы ответим в течение 3 дней.</p>
+            <a href="{{ url_for('apply') }}" class="btn btn-primary btn-sm w-100 mt-2">Задать вопрос</a>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,59 @@
+{% extends "admin/base_admin.html" %}
+{% block title %}Панель управления — Жилищный комитет{% endblock %}
+{% block admin_content %}
+<h1 style="font-size:26px;margin-bottom:24px;">Панель управления</h1>
+<div class="stats-grid">
+  <div class="stat-card">
+    <div class="stat-number">{{ stats.users }}</div>
+    <div class="stat-label">Пользователей</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-number">{{ stats.applications }}</div>
+    <div class="stat-label">Всего обращений</div>
+  </div>
+  <div class="stat-card" style="border-top-color:#e74c3c;">
+    <div class="stat-number" style="color:#e74c3c;">{{ stats.new_applications }}</div>
+    <div class="stat-label">Новых обращений</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-number">{{ stats.news }}</div>
+    <div class="stat-label">Новостей</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-number">{{ stats.articles }}</div>
+    <div class="stat-label">Статей</div>
+  </div>
+  <div class="stat-card" style="border-top-color:#3498db;">
+    <div class="stat-number" style="color:#3498db;">{{ stats.messages }}</div>
+    <div class="stat-label">Непрочитанных сообщений</div>
+  </div>
+</div>
+
+<h2 style="font-size:20px;margin-bottom:16px;">Последние обращения</h2>
+{% if recent_apps %}
+<div class="table-wrap">
+  <table class="data-table">
+    <thead><tr><th>№</th><th>Заявитель</th><th>Тема</th><th>Тип</th><th>Дата</th><th>Статус</th><th></th></tr></thead>
+    <tbody>
+      {% for a in recent_apps %}
+      <tr>
+        <td>{{ a.id }}</td>
+        <td style="font-family:'PT Sans',sans-serif;">{{ a.applicant_name }}</td>
+        <td>{{ a.subject[:50] }}{% if a.subject|length > 50 %}...{% endif %}</td>
+        <td style="font-family:'PT Sans',sans-serif;font-size:13px;">{{ a.app_type or '—' }}</td>
+        <td style="font-family:'PT Sans',sans-serif;font-size:13px;">{{ a.created_at.strftime('%d.%m.%Y') }}</td>
+        <td>
+          {% if a.status == 'new' %}<span class="badge badge-new">Новое</span>
+          {% elif a.status == 'in_progress' %}<span class="badge badge-progress">В работе</span>
+          {% elif a.status == 'resolved' %}<span class="badge badge-resolved">Рассмотрено</span>
+          {% elif a.status == 'rejected' %}<span class="badge badge-rejected">Отклонено</span>{% endif %}
+        </td>
+        <td><a href="{{ url_for('admin_application_detail', app_id=a.id) }}" class="btn btn-secondary btn-sm">Открыть</a></td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+<a href="{{ url_for('admin_applications') }}" class="btn btn-secondary btn-sm mt-2">Все обращения →</a>
+{% endif %}
+{% endblock %}

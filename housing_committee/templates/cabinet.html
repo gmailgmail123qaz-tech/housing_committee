@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+{% block title %}Личный кабинет — Жилищный комитет{% endblock %}
+{% block content %}
+<div class="breadcrumbs"><div class="container"><ol><li><a href="{{ url_for('index') }}">Главная</a></li><li>Личный кабинет</li></ol></div></div>
+<div class="page-body">
+  <div class="container">
+    <div class="page-title">
+      <h1>Личный кабинет</h1>
+      <p>Добро пожаловать, {{ current_user.full_name or current_user.username }}!</p>
+    </div>
+
+    <div class="layout-sidebar">
+      <div>
+        <!-- Applications -->
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+          <h2 style="font-size:22px;">Мои обращения</h2>
+          <a href="{{ url_for('apply') }}" class="btn btn-primary btn-sm">+ Новое обращение</a>
+        </div>
+
+        {% if applications %}
+        <div class="table-wrap">
+          <table class="data-table">
+            <thead>
+              <tr><th>№</th><th>Тема</th><th>Тип</th><th>Дата</th><th>Статус</th></tr>
+            </thead>
+            <tbody>
+              {% for a in applications %}
+              <tr>
+                <td>{{ a.id }}</td>
+                <td>{{ a.subject[:60] }}{% if a.subject|length > 60 %}...{% endif %}</td>
+                <td style="font-size:13px;">{{ a.app_type or '—' }}</td>
+                <td style="font-family:'PT Sans',sans-serif;font-size:13px;">{{ a.created_at.strftime('%d.%m.%Y') }}</td>
+                <td>
+                  {% if a.status == 'new' %}<span class="badge badge-new">Новое</span>
+                  {% elif a.status == 'in_progress' %}<span class="badge badge-progress">В работе</span>
+                  {% elif a.status == 'resolved' %}<span class="badge badge-resolved">Рассмотрено</span>
+                  {% elif a.status == 'rejected' %}<span class="badge badge-rejected">Отклонено</span>
+                  {% endif %}
+                </td>
+              </tr>
+              {% if a.response %}
+              <tr><td colspan="5" style="background:var(--gold-pale);font-family:'PT Sans',sans-serif;font-size:13.5px;padding:10px 14px;">
+                <strong>Ответ комитета:</strong> {{ a.response }}
+              </td></tr>
+              {% endif %}
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+        {% else %}
+        <div class="alert alert-info">У вас пока нет обращений. <a href="{{ url_for('apply') }}">Подать первое обращение</a>.</div>
+        {% endif %}
+      </div>
+
+      <aside>
+        <div class="card" style="border-top:3px solid var(--gold);">
+          <div class="card-header"><strong>Профиль</strong></div>
+          <div class="card-body" style="font-family:'PT Sans',sans-serif;font-size:14px;line-height:1.8;">
+            <p><strong>Логин:</strong> {{ current_user.username }}</p>
+            <p><strong>Имя:</strong> {{ current_user.full_name or '—' }}</p>
+            <p><strong>Email:</strong> {{ current_user.email }}</p>
+            <p><strong>Роль:</strong> <span class="badge {{ 'badge-admin' if current_user.is_admin else 'badge-user' }}">{{ 'Администратор' if current_user.is_admin else 'Пользователь' }}</span></p>
+            <p><strong>Зарегистрирован:</strong> {{ current_user.created_at.strftime('%d.%m.%Y') }}</p>
+          </div>
+        </div>
+        <div class="sidebar-block mt-3">
+          <div class="sidebar-block-title">Действия</div>
+          <ul class="sidebar-links">
+            <li><a href="{{ url_for('apply') }}">📝 Подать обращение</a></li>
+            <li><a href="{{ url_for('messages') }}">💬 Написать в комитет</a></li>
+            {% if current_user.is_admin %}
+            <li><a href="{{ url_for('admin_dashboard') }}">⚙️ Панель управления</a></li>
+            {% endif %}
+            <li><a href="{{ url_for('logout') }}">🚪 Выйти</a></li>
+          </ul>
+        </div>
+      </aside>
+    </div>
+  </div>
+</div>
+{% endblock %}

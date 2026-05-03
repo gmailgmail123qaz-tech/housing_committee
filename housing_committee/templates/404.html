@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block title %}Страница не найдена — Жилищный комитет{% endblock %}
+{% block content %}
+<div class="page-body">
+  <div class="container">
+    <div class="error-page">
+      <div class="error-code">404</div>
+      <h1 class="error-title" style="margin-bottom:16px;">Страница не найдена</h1>
+      <p style="color:var(--text-muted);max-width:460px;margin:0 auto 28px;font-size:16px;">Запрашиваемая страница не существует или была перемещена. Воспользуйтесь навигацией или поиском по сайту.</p>
+      <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
+        <a href="{{ url_for('index') }}" class="btn btn-primary">← На главную</a>
+        <a href="{{ url_for('search') }}" class="btn btn-secondary">🔍 Поиск</a>
+        <a href="{{ url_for('sitemap') }}" class="btn btn-secondary">🗺 Карта сайта</a>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

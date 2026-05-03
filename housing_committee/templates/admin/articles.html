@@ -1,0 +1,66 @@
+{% extends "admin/base_admin.html" %}
+{% block title %}Управление статьями — Жилищный комитет{% endblock %}
+{% block admin_content %}
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;">
+  <h1 style="font-size:26px;">Статьи</h1>
+  <button class="btn btn-primary" onclick="document.getElementById('addForm').style.display=document.getElementById('addForm').style.display==='none'?'block':'none'">+ Добавить</button>
+</div>
+
+<div id="addForm" style="display:none;" class="card mb-4">
+  <div class="card-header"><strong>Новая статья</strong></div>
+  <div class="card-body">
+    <form method="POST">
+      <input type="hidden" name="action" value="create">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:0 20px;">
+        <div class="form-group">
+          <label class="form-label required">Заголовок</label>
+          <input type="text" name="title" class="form-control" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label required">Раздел</label>
+          <select name="section" class="form-control" required>
+            <option value="">— выберите раздел —</option>
+            <option value="services">Услуги</option>
+            <option value="documents">Документы</option>
+            <option value="legislation">Законодательство</option>
+            <option value="residents">Жильцам</option>
+            <option value="faq">FAQ</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Автор</label>
+        <input type="text" name="author_name" class="form-control" value="{{ current_user.full_name or current_user.username }}">
+      </div>
+      <div class="form-group">
+        <label class="form-label required">Текст статьи</label>
+        <textarea name="content" class="form-control" rows="10" required></textarea>
+      </div>
+      <button type="submit" class="btn btn-primary">Сохранить</button>
+    </form>
+  </div>
+</div>
+
+<div class="table-wrap">
+  <table class="data-table">
+    <thead><tr><th>ID</th><th>Заголовок</th><th>Раздел</th><th>Дата</th><th></th></tr></thead>
+    <tbody>
+      {% for a in articles %}
+      <tr>
+        <td>{{ a.id }}</td>
+        <td>{{ a.title[:60] }}{% if a.title|length > 60 %}...{% endif %}</td>
+        <td><span class="badge badge-new">{{ a.section }}</span></td>
+        <td style="font-family:'PT Sans',sans-serif;font-size:13px;">{{ a.published_at.strftime('%d.%m.%Y') }}</td>
+        <td>
+          <form method="POST" style="display:inline;" onsubmit="return confirm('Удалить статью?')">
+            <input type="hidden" name="action" value="delete">
+            <input type="hidden" name="article_id" value="{{ a.id }}">
+            <button type="submit" class="btn btn-danger btn-sm">✕</button>
+          </form>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

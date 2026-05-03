@@ -1,0 +1,88 @@
+{% extends 'admin/base_admin.html' %}
+{% block title %}Переписка с {{ thread_user.username }} — Администрирование{% endblock %}
+{% block page_title %}Диалог: {{ thread_user.full_name or thread_user.username }}{% endblock %}
+
+{% block content %}
+<div class="thread-layout">
+  <div class="thread-main">
+    <div class="chat-window" id="chatWindow">
+      {% for msg in messages %}
+      <div class="msg-wrap {% if msg.is_admin %}msg-admin{% else %}msg-user{% endif %}">
+        <div class="msg-bubble">
+          <div class="msg-sender">{{ '👑 Администратор' if msg.is_admin else (thread_user.full_name or thread_user.username) }}</div>
+          <div class="msg-body">{{ msg.body }}</div>
+          <div class="msg-time">{{ msg.created_at.strftime('%d.%m.%Y %H:%M') }}</div>
+        </div>
+      </div>
+      {% else %}
+      <div class="chat-empty">Сообщений пока нет. Начните диалог с пользователем.</div>
+      {% endfor %}
+    </div>
+
+    <form method="post" class="reply-form">
+      <textarea name="body" class="reply-input" rows="3" placeholder="Введите ответ..." required></textarea>
+      <div class="reply-actions">
+        <button type="submit" class="btn-send">📨 Отправить</button>
+        <a href="{{ url_for('admin_messages') }}" class="btn-back">← Все диалоги</a>
+      </div>
+    </form>
+  </div>
+
+  <aside class="thread-sidebar">
+    <div class="sidebar-card">
+      <div class="user-hero">
+        <div class="user-avatar-lg">{{ (thread_user.full_name or thread_user.username)[0].upper() }}</div>
+        <div class="user-name-lg">{{ thread_user.full_name or thread_user.username }}</div>
+        <div class="user-role">{{ '👑 Администратор' if thread_user.role == 'admin' else '👤 Пользователь' }}</div>
+      </div>
+      <dl class="info-list">
+        <dt>Логин</dt><dd>@{{ thread_user.username }}</dd>
+        <dt>Email</dt><dd>{{ thread_user.email }}</dd>
+        <dt>Обращений</dt><dd>{{ thread_user.applications|length }}</dd>
+      </dl>
+      <a href="{{ url_for('admin_users') }}" class="btn-users">👥 К списку пользователей</a>
+    </div>
+  </aside>
+</div>
+
+<script>
+  window.addEventListener('load', () => {
+    const w = document.getElementById('chatWindow');
+    if(w) w.scrollTop = w.scrollHeight;
+  });
+</script>
+
+<style>
+.thread-layout{display:grid;grid-template-columns:1fr 260px;gap:1.5rem}
+@media(max-width:900px){.thread-layout{grid-template-columns:1fr}}
+.thread-main{display:flex;flex-direction:column;gap:1rem}
+.chat-window{background:var(--bg-card);border:1px solid var(--border);border-radius:10px;padding:1.25rem;min-height:400px;max-height:520px;overflow-y:auto;display:flex;flex-direction:column;gap:.85rem}
+.msg-wrap{display:flex}
+.msg-admin{justify-content:flex-end}
+.msg-user{justify-content:flex-start}
+.msg-bubble{max-width:70%;padding:.75rem 1rem;border-radius:12px}
+.msg-admin .msg-bubble{background:var(--accent);color:#fff;border-radius:12px 12px 0 12px}
+.msg-user .msg-bubble{background:var(--bg);border:1px solid var(--border);border-radius:12px 12px 12px 0}
+.msg-sender{font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;margin-bottom:.35rem;opacity:.8}
+.msg-body{line-height:1.55;white-space:pre-wrap;font-size:.9rem}
+.msg-time{font-size:.7rem;opacity:.65;margin-top:.35rem;text-align:right}
+.chat-empty{text-align:center;color:var(--text-muted);padding:2rem;font-size:.9rem;margin:auto}
+.reply-form{background:var(--bg-card);border:1px solid var(--border);border-radius:10px;padding:1.25rem}
+.reply-input{width:100%;border:1px solid var(--border);border-radius:8px;padding:.65rem .9rem;font-size:.9rem;font-family:inherit;background:var(--bg);color:var(--text);resize:vertical}
+.reply-input:focus{outline:none;border-color:var(--accent)}
+.reply-actions{display:flex;align-items:center;gap:.75rem;margin-top:.75rem}
+.btn-send{padding:.55rem 1.25rem;background:var(--accent);color:#fff;border:none;border-radius:6px;font-size:.875rem;font-weight:600;cursor:pointer}
+.btn-send:hover{opacity:.85}
+.btn-back{font-size:.85rem;color:var(--text-muted);text-decoration:none}
+.sidebar-card{background:var(--bg-card);border:1px solid var(--border);border-radius:10px;padding:1.25rem}
+.user-hero{text-align:center;margin-bottom:1.25rem;padding-bottom:1rem;border-bottom:1px solid var(--border)}
+.user-avatar-lg{width:60px;height:60px;border-radius:50%;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:1.5rem;margin:0 auto .6rem}
+.user-name-lg{font-weight:700;font-size:1rem;color:var(--text)}
+.user-role{font-size:.8rem;color:var(--text-muted);margin-top:.2rem}
+.info-list{margin:0 0 1rem;display:grid;grid-template-columns:auto 1fr;gap:.4rem .75rem}
+.info-list dt{font-size:.78rem;color:var(--text-muted);font-weight:600}
+.info-list dd{font-size:.85rem;color:var(--text);margin:0;word-break:break-all}
+.btn-users{display:block;padding:.45rem .85rem;background:transparent;color:var(--accent);border:1px solid var(--accent);border-radius:6px;font-size:.82rem;font-weight:600;text-align:center;text-decoration:none;margin-top:.5rem}
+.btn-users:hover{background:var(--accent);color:#fff}
+</style>
+{% endblock %}

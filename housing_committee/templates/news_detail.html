@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% block title %}{{ item.title }} — Жилищный комитет{% endblock %}
+{% block content %}
+<div class="breadcrumbs"><div class="container"><ol><li><a href="{{ url_for('index') }}">Главная</a></li><li><a href="{{ url_for('news') }}">Новости</a></li><li>{{ item.title[:50] }}...</li></ol></div></div>
+<div class="page-body">
+  <div class="container">
+    <div class="layout-sidebar">
+      <article>
+        {% if item.category %}<span class="news-category">{{ item.category }}</span>{% endif %}
+        <h1 style="font-size:clamp(22px,3vw,32px);margin:12px 0 8px;">{{ item.title }}</h1>
+        <div style="display:flex;gap:20px;font-family:'PT Sans',sans-serif;font-size:13.5px;color:var(--text-muted);margin-bottom:24px;flex-wrap:wrap;">
+          <span>📅 {{ item.published_at.strftime('%d %B %Y г.') }}</span>
+          {% if item.author_name %}<span>✍️ {{ item.author_name }}</span>{% endif %}
+        </div>
+        <div class="article-content">
+          {% for line in item.content.split('\n') %}
+            {% if line.strip() %}
+              {% if line.startswith('—') or line.startswith('-') %}
+                <p>{{ line }}</p>
+              {% else %}
+                <p>{{ line }}</p>
+              {% endif %}
+            {% endif %}
+          {% endfor %}
+        </div>
+        <div style="margin-top:30px;padding-top:20px;border-top:1px solid var(--border);display:flex;gap:10px;flex-wrap:wrap;">
+          <a href="{{ url_for('news') }}" class="btn btn-secondary btn-sm">← К списку новостей</a>
+          <a href="{{ url_for('apply') }}" class="btn btn-primary btn-sm">Подать обращение</a>
+        </div>
+      </article>
+
+      <aside>
+        {% if related %}
+        <div class="sidebar-block">
+          <div class="sidebar-block-title">Другие новости</div>
+          {% for r in related %}
+          <div style="padding:12px 0;border-bottom:1px solid var(--border);">
+            {% if r.category %}<span class="news-category" style="font-size:10px;">{{ r.category }}</span>{% endif %}
+            <div style="font-size:12px;color:var(--text-muted);margin:4px 0;">{{ r.published_at.strftime('%d.%m.%Y') }}</div>
+            <a href="{{ url_for('news_detail', news_id=r.id) }}" style="font-family:'PT Sans',sans-serif;font-size:14px;color:var(--navy);line-height:1.4;display:block;">{{ r.title }}</a>
+          </div>
+          {% endfor %}
+        </div>
+        {% endif %}
+
+        <div class="card" style="border-top:3px solid var(--gold);">
+          <div class="card-body">
+            <p style="font-family:'PT Sans',sans-serif;font-size:14px;"><strong>Есть вопросы?</strong><br>Свяжитесь с нами или подайте онлайн-обращение.</p>
+            <a href="{{ url_for('apply') }}" class="btn btn-primary btn-sm w-100 mt-2">Написать обращение</a>
+            <a href="{{ url_for('contacts') }}" class="btn btn-secondary btn-sm w-100 mt-1">Контакты</a>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </div>
+</div>
+{% endblock %}

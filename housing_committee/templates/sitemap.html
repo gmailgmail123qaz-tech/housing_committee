@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+{% block title %}Карта сайта — Жилищный комитет{% endblock %}
+{% block content %}
+<div class="breadcrumbs"><div class="container"><ol><li><a href="{{ url_for('index') }}">Главная</a></li><li>Карта сайта</li></ol></div></div>
+<div class="page-body">
+  <div class="container">
+    <div class="page-title"><h1>Карта сайта</h1><p>Полная структура официального портала Жилищного комитета</p></div>
+    <div class="sitemap-grid">
+      <div class="sitemap-section">
+        <h3>🏠 Главная</h3>
+        <ul><li><a href="{{ url_for('index') }}">Главная страница</a></li></ul>
+      </div>
+      <div class="sitemap-section">
+        <h3>📰 Новости</h3>
+        <ul>
+          <li><a href="{{ url_for('news') }}">Все новости</a></li>
+          <li><a href="{{ url_for('news', category='объявления') }}">Объявления</a></li>
+          <li><a href="{{ url_for('news', category='события') }}">События</a></li>
+          <li><a href="{{ url_for('news', category='программы') }}">Программы</a></li>
+          <li><a href="{{ url_for('news', category='льготы') }}">Льготы</a></li>
+          <li><a href="{{ url_for('news', category='отчёты') }}">Отчёты</a></li>
+        </ul>
+      </div>
+      <div class="sitemap-section">
+        <h3>🛠 Услуги</h3>
+        <ul>
+          <li><a href="{{ url_for('services') }}">Все услуги</a></li>
+          <li><a href="{{ url_for('services') }}">Улучшение жилищных условий</a></li>
+          <li><a href="{{ url_for('services') }}">Приватизация жилья</a></li>
+          <li><a href="{{ url_for('services') }}">Договор социального найма</a></li>
+          <li><a href="{{ url_for('services') }}">Субсидии на капремонт</a></li>
+        </ul>
+      </div>
+      <div class="sitemap-section">
+        <h3>📄 Документы</h3>
+        <ul>
+          <li><a href="{{ url_for('documents') }}">Все документы</a></li>
+          <li><a href="{{ url_for('documents') }}">Перечень документов</a></li>
+          <li><a href="{{ url_for('documents') }}">Формы заявлений</a></li>
+          <li><a href="{{ url_for('documents') }}">Справки и выписки</a></li>
+          <li><a href="{{ url_for('documents') }}">Архивные документы</a></li>
+        </ul>
+      </div>
+      <div class="sitemap-section">
+        <h3>⚖️ Законодательство</h3>
+        <ul>
+          <li><a href="{{ url_for('legislation') }}">Все материалы</a></li>
+          <li><a href="{{ url_for('legislation') }}">Жилищный кодекс</a></li>
+          <li><a href="{{ url_for('legislation') }}">ФЗ № 185</a></li>
+          <li><a href="{{ url_for('legislation') }}">Права собственников</a></li>
+        </ul>
+      </div>
+      <div class="sitemap-section">
+        <h3>👤 Жильцам</h3>
+        <ul>
+          <li><a href="{{ url_for('residents') }}">Все материалы</a></li>
+          <li><a href="{{ url_for('residents') }}">Энергосбережение</a></li>
+          <li><a href="{{ url_for('residents') }}">Общее имущество</a></li>
+          <li><a href="{{ url_for('residents') }}">Общее собрание</a></li>
+          <li><a href="{{ url_for('residents') }}">Благоустройство</a></li>
+        </ul>
+      </div>
+      <div class="sitemap-section">
+        <h3>❓ FAQ</h3>
+        <ul>
+          <li><a href="{{ url_for('faq') }}">Все вопросы</a></li>
+          <li><a href="{{ url_for('faq') }}">Жилищная очередь</a></li>
+          <li><a href="{{ url_for('faq') }}">Управляющая компания</a></li>
+          <li><a href="{{ url_for('faq') }}">Регистрация в муниципальном жилье</a></li>
+        </ul>
+      </div>
+      <div class="sitemap-section">
+        <h3>🏛 Комитет</h3>
+        <ul>
+          <li><a href="{{ url_for('about') }}">О комитете</a></li>
+          <li><a href="{{ url_for('contacts') }}">Контакты</a></li>
+          <li><a href="{{ url_for('sitemap') }}">Карта сайта</a></li>
+        </ul>
+      </div>
+      <div class="sitemap-section">
+        <h3>🔐 Личный кабинет</h3>
+        <ul>
+          <li><a href="{{ url_for('login') }}">Вход</a></li>
+          <li><a href="{{ url_for('register') }}">Регистрация</a></li>
+          <li><a href="{{ url_for('cabinet') }}">Мои обращения</a></li>
+          <li><a href="{{ url_for('apply') }}">Подать обращение</a></li>
+          <li><a href="{{ url_for('messages') }}">Сообщения</a></li>
+        </ul>
+      </div>
+      <div class="sitemap-section">
+        <h3>🔍 Поиск</h3>
+        <ul><li><a href="{{ url_for('search') }}">Поиск по сайту</a></li></ul>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% block title %}Подать обращение — Жилищный комитет{% endblock %}
+{% block content %}
+<div class="breadcrumbs"><div class="container"><ol><li><a href="{{ url_for('index') }}">Главная</a></li><li><a href="{{ url_for('cabinet') }}">Кабинет</a></li><li>Подать обращение</li></ol></div></div>
+<div class="page-body">
+  <div class="container-narrow">
+    <div class="page-title"><h1>Подача обращения</h1><p>Ваше обращение будет рассмотрено в течение 3 рабочих дней</p></div>
+    <div class="card">
+      <div class="card-body">
+        <form method="POST" action="{{ url_for('apply') }}">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:0 20px;">
+            <div class="form-group">
+              <label class="form-label required">ФИО заявителя</label>
+              <input type="text" name="applicant_name" class="form-control" required value="{{ current_user.full_name or '' }}" placeholder="Иванов Иван Иванович">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Электронная почта</label>
+              <input type="email" name="applicant_email" class="form-control" value="{{ current_user.email }}" placeholder="email@example.com">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Контактный телефон</label>
+              <input type="text" name="applicant_phone" class="form-control" placeholder="+7 (900) 000-00-00">
+            </div>
+            <div class="form-group">
+              <label class="form-label required">Тип обращения</label>
+              <select name="app_type" class="form-control" required>
+                <option value="">— Выберите тип —</option>
+                <option>Жилищная очередь</option>
+                <option>Приватизация</option>
+                <option>Субсидии и льготы</option>
+                <option>Аварийное жильё</option>
+                <option>Капитальный ремонт</option>
+                <option>Управляющая компания</option>
+                <option>Договор найма</option>
+                <option>Регистрация</option>
+                <option>Иное</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label required">Тема обращения</label>
+            <input type="text" name="subject" class="form-control" required placeholder="Кратко опишите суть обращения">
+          </div>
+          <div class="form-group">
+            <label class="form-label required">Текст обращения</label>
+            <textarea name="description" class="form-control" required rows="7" placeholder="Подробно опишите вашу ситуацию, укажите адрес объекта, конкретные даты и другие важные детали."></textarea>
+          </div>
+          <div style="display:flex;gap:12px;flex-wrap:wrap;">
+            <button type="submit" class="btn btn-primary btn-lg">📤 Отправить обращение</button>
+            <a href="{{ url_for('cabinet') }}" class="btn btn-secondary btn-lg">Отмена</a>
+          </div>
+        </form>
+      </div>
+    </div>
+    <div class="alert alert-info mt-3">
+      <div>ℹ️ <strong>Важно:</strong> обращения рассматриваются в течение 3 рабочих дней. Ответ направляется на указанный e-mail и отображается в личном кабинете.</div>
+    </div>
+  </div>
+</div>
+{% endblock %}

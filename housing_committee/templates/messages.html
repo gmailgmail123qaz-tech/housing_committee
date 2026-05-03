@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block title %}Сообщения — Жилищный комитет{% endblock %}
+{% block content %}
+<div class="breadcrumbs"><div class="container"><ol><li><a href="{{ url_for('index') }}">Главная</a></li><li><a href="{{ url_for('cabinet') }}">Кабинет</a></li><li>Сообщения</li></ol></div></div>
+<div class="page-body">
+  <div class="container-narrow">
+    <div class="page-title"><h1>Переписка с комитетом</h1></div>
+    <div class="card">
+      <div class="card-header"><strong>💬 Диалог со специалистом</strong></div>
+      <div class="card-body" style="padding:0;">
+        <div class="message-thread" id="msgThread">
+          {% if messages %}
+            {% for msg in messages %}
+            <div class="msg-bubble {{ 'msg-admin' if msg.is_admin_reply else 'msg-user' }}">
+              {{ msg.content }}
+              <div class="msg-meta">
+                {% if msg.is_admin_reply %}Специалист Жилищного комитета{% else %}{{ current_user.full_name or current_user.username }}{% endif %}
+                · {{ msg.created_at.strftime('%d.%m.%Y %H:%M') }}
+              </div>
+            </div>
+            {% endfor %}
+          {% else %}
+            <div style="text-align:center;padding:30px;font-family:'PT Sans',sans-serif;color:var(--text-muted);">
+              <p style="font-size:32px;">💬</p>
+              <p>Диалог пуст. Напишите первое сообщение — специалист ответит в рабочее время.</p>
+            </div>
+          {% endif %}
+        </div>
+        <form method="POST" action="{{ url_for('messages') }}" style="padding:14px;border-top:1px solid var(--border);display:flex;gap:10px;">
+          <textarea name="content" class="form-control" rows="2" placeholder="Напишите сообщение..." required style="resize:none;"></textarea>
+          <button type="submit" class="btn btn-primary" style="align-self:flex-end;white-space:nowrap;">Отправить</button>
+        </form>
+      </div>
+    </div>
+    <div style="margin-top:14px;">
+      <a href="{{ url_for('cabinet') }}" class="btn btn-secondary btn-sm">← Назад в кабинет</a>
+    </div>
+  </div>
+</div>
+{% block extra_js %}
+<script>
+  const t = document.getElementById('msgThread');
+  if(t) t.scrollTop = t.scrollHeight;
+</script>
+{% endblock %}
+{% endblock %}

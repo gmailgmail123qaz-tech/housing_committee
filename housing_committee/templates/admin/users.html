@@ -1,0 +1,94 @@
+{% extends 'admin/base_admin.html' %}
+{% block title %}Пользователи — Администрирование{% endblock %}
+{% block page_title %}Пользователи системы{% endblock %}
+
+{% block content %}
+<div class="users-summary">
+  <div class="summary-card">
+    <div class="summary-num">{{ users|length }}</div>
+    <div class="summary-label">Всего</div>
+  </div>
+  <div class="summary-card">
+    <div class="summary-num">{{ users|selectattr('role','eq','admin')|list|length }}</div>
+    <div class="summary-label">Администраторов</div>
+  </div>
+  <div class="summary-card">
+    <div class="summary-num">{{ users|selectattr('role','eq','user')|list|length }}</div>
+    <div class="summary-label">Пользователей</div>
+  </div>
+</div>
+
+<div class="admin-table-wrap">
+  <table class="admin-table">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Имя пользователя</th>
+        <th>ФИО</th>
+        <th>Email</th>
+        <th>Роль</th>
+        <th>Обращений</th>
+        <th>Сообщений</th>
+        <th>Дата регистрации</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for u in users %}
+      <tr>
+        <td class="td-id">{{ u.id }}</td>
+        <td>
+          <div class="user-cell">
+            <div class="user-avatar">{{ (u.full_name or u.username)[0].upper() }}</div>
+            <div class="user-info">
+              <strong>{{ u.username }}</strong>
+            </div>
+          </div>
+        </td>
+        <td>{{ u.full_name or '—' }}</td>
+        <td class="td-email">{{ u.email }}</td>
+        <td>
+          <span class="role-badge role-{{ u.role }}">
+            {% if u.role == 'admin' %}👑 Администратор{% else %}👤 Пользователь{% endif %}
+          </span>
+        </td>
+        <td class="td-count">
+          {% set apps_count = u.applications|length %}
+          {% if apps_count > 0 %}
+          <a href="{{ url_for('admin_applications') }}?user={{ u.id }}" class="count-link">{{ apps_count }}</a>
+          {% else %}0{% endif %}
+        </td>
+        <td class="td-count">
+          {% set msg_count = u.messages|length %}
+          {% if msg_count > 0 %}
+          <a href="{{ url_for('admin_message_thread', user_id=u.id) }}" class="count-link">{{ msg_count }}</a>
+          {% else %}0{% endif %}
+        </td>
+        <td class="td-date">{{ u.created_at.strftime('%d.%m.%Y') if u.created_at else '—' }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<style>
+.users-summary{display:flex;gap:1rem;margin-bottom:1.5rem;flex-wrap:wrap}
+.summary-card{background:var(--bg-card);border:1px solid var(--border);border-radius:8px;padding:1rem 1.5rem;text-align:center;flex:1;min-width:120px}
+.summary-num{font-size:1.75rem;font-weight:800;color:var(--accent)}
+.summary-label{font-size:.78rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:.06em;margin-top:.2rem}
+.admin-table-wrap{overflow-x:auto}
+.admin-table{width:100%;border-collapse:collapse;font-size:.875rem}
+.admin-table th{padding:.75rem 1rem;text-align:left;font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--text-muted);background:var(--bg-card);border-bottom:2px solid var(--border)}
+.admin-table td{padding:.75rem 1rem;border-bottom:1px solid var(--border);vertical-align:middle}
+.admin-table tr:hover td{background:var(--bg-card)}
+.td-id{color:var(--text-muted);font-size:.8rem;width:3rem}
+.td-date,.td-count{white-space:nowrap;color:var(--text-muted);text-align:center}
+.td-email{font-size:.8rem;color:var(--text-muted)}
+.user-cell{display:flex;align-items:center;gap:.65rem}
+.user-avatar{width:32px;height:32px;border-radius:50%;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.9rem;flex-shrink:0}
+.role-badge{display:inline-flex;align-items:center;gap:.25rem;padding:.25rem .65rem;border-radius:12px;font-size:.75rem;font-weight:700}
+.role-admin{background:#fef3c7;color:#b45309}
+.role-user{background:#dbeafe;color:#1e40af}
+.count-link{color:var(--accent);text-decoration:none;font-weight:600}
+.count-link:hover{text-decoration:underline}
+</style>
+{% endblock %}

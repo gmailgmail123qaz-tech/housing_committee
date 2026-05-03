@@ -1,0 +1,73 @@
+{% extends "admin/base_admin.html" %}
+{% block title %}Управление новостями — Жилищный комитет{% endblock %}
+{% block admin_content %}
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;">
+  <h1 style="font-size:26px;">Новости</h1>
+  <button class="btn btn-primary" onclick="document.getElementById('addForm').style.display=document.getElementById('addForm').style.display==='none'?'block':'none'">+ Добавить</button>
+</div>
+
+<div id="addForm" style="display:none;" class="card mb-4">
+  <div class="card-header"><strong>Новая новость</strong></div>
+  <div class="card-body">
+    <form method="POST">
+      <input type="hidden" name="action" value="create">
+      <div class="form-group">
+        <label class="form-label required">Заголовок</label>
+        <input type="text" name="title" class="form-control" required>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:0 20px;">
+        <div class="form-group">
+          <label class="form-label">Категория</label>
+          <select name="category" class="form-control">
+            <option value="">— без категории —</option>
+            <option>объявления</option><option>события</option><option>программы</option>
+            <option>льготы</option><option>отчёты</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Автор</label>
+          <input type="text" name="author_name" class="form-control" value="{{ current_user.full_name or current_user.username }}">
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Краткое описание</label>
+        <input type="text" name="excerpt" class="form-control" placeholder="Одно-два предложения для анонса">
+      </div>
+      <div class="form-group">
+        <label class="form-label required">Текст</label>
+        <textarea name="content" class="form-control" rows="8" required></textarea>
+      </div>
+      <div class="form-group">
+        <label style="display:flex;align-items:center;gap:8px;font-family:'PT Sans',sans-serif;cursor:pointer;">
+          <input type="checkbox" name="is_published" checked> Опубликовать
+        </label>
+      </div>
+      <button type="submit" class="btn btn-primary">Сохранить</button>
+    </form>
+  </div>
+</div>
+
+<div class="table-wrap">
+  <table class="data-table">
+    <thead><tr><th>ID</th><th>Заголовок</th><th>Категория</th><th>Дата</th><th>Статус</th><th></th></tr></thead>
+    <tbody>
+      {% for item in news_list %}
+      <tr>
+        <td>{{ item.id }}</td>
+        <td>{{ item.title[:60] }}{% if item.title|length > 60 %}...{% endif %}</td>
+        <td style="font-family:'PT Sans',sans-serif;font-size:13px;">{{ item.category or '—' }}</td>
+        <td style="font-family:'PT Sans',sans-serif;font-size:13px;">{{ item.published_at.strftime('%d.%m.%Y') }}</td>
+        <td><span class="badge {{ 'badge-resolved' if item.is_published else 'badge-rejected' }}">{{ 'Опубл.' if item.is_published else 'Черновик' }}</span></td>
+        <td>
+          <form method="POST" style="display:inline;" onsubmit="return confirm('Удалить новость?')">
+            <input type="hidden" name="action" value="delete">
+            <input type="hidden" name="news_id" value="{{ item.id }}">
+            <button type="submit" class="btn btn-danger btn-sm">✕</button>
+          </form>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

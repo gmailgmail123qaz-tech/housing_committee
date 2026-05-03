@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="ru" class="{{ 'visually-impaired' if session.get('vi_mode') else '' }}">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}Жилищный комитет{% endblock %}</title>
+  <meta name="description" content="Официальный сайт Жилищного комитета — государственные услуги в сфере жилищно-коммунального хозяйства">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  {% block extra_css %}{% endblock %}
+</head>
+<body class="{{ 'visually-impaired' if session.get('vi_mode') else '' }}">
+
+<!-- ACCESSIBILITY BAR -->
+<div class="accessibility-bar">
+  <div class="container">
+    <span>Версия для:</span>
+    <a href="{{ url_for('toggle_vi') }}" title="Версия для слабовидящих">
+      {% if session.get('vi_mode') %}
+        👁 Стандартная версия
+      {% else %}
+        👁 Слабовидящих
+      {% endif %}
+    </a>
+    <span>|</span>
+    <a href="{{ url_for('sitemap') }}">🗺 Карта сайта</a>
+    <span>|</span>
+    <a href="{{ url_for('contacts') }}">📞 Контакты</a>
+  </div>
+</div>
+
+<!-- TOP BAR -->
+<div class="topbar">
+  <div class="container">
+    <div class="topbar-left">
+      <span>📞 Горячая линия: <a href="tel:88001001010">8-800-100-10-10</a> (бесплатно)</span>
+      <span>✉ <a href="mailto:info@housing-committee.ru">info@housing-committee.ru</a></span>
+    </div>
+    <div class="topbar-right">
+      <span>Пн–Пт: 9:00–18:00</span>
+      {% if current_user.is_authenticated %}
+        <a href="{{ url_for('cabinet') }}">👤 {{ current_user.username }}</a>
+        <a href="{{ url_for('logout') }}">Выйти</a>
+      {% else %}
+        <a href="{{ url_for('login') }}">Войти</a>
+        <a href="{{ url_for('register') }}">Регистрация</a>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+<!-- HEADER -->
+<header class="site-header">
+  <div class="container">
+    <div class="header-inner">
+      <a href="{{ url_for('index') }}" class="header-logo">
+        <div class="logo-emblem">ЖК</div>
+        <div class="logo-text">
+          <span class="org-name">Жилищный комитет</span>
+          <span class="org-sub">Официальный портал</span>
+        </div>
+      </a>
+
+      <div class="header-search">
+        <form action="{{ url_for('search') }}" method="get">
+          <input type="text" name="q" placeholder="Поиск по сайту..." value="{{ request.args.get('q', '') }}">
+          <button type="submit">🔍</button>
+        </form>
+      </div>
+
+      <div class="header-actions">
+        {% if current_user.is_authenticated %}
+          <a href="{{ url_for('cabinet') }}" class="btn btn-outline-light btn-sm">Личный кабинет</a>
+          {% if current_user.is_admin %}
+            <a href="{{ url_for('admin_dashboard') }}" class="btn btn-primary btn-sm">Админ</a>
+          {% endif %}
+        {% else %}
+          <a href="{{ url_for('login') }}" class="btn btn-outline-light btn-sm">Войти</a>
+          <a href="{{ url_for('apply') }}" class="btn btn-primary btn-sm">Подать обращение</a>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- NAVIGATION -->
+<nav class="main-nav" id="mainNav">
+  <div class="container nav-container">
+    <button class="nav-toggle" id="navToggle" aria-label="Открыть меню" aria-expanded="false">☰</button>
+    <ul class="nav-list" id="navMenu">
+      <li><a href="{{ url_for('index') }}" class="nav-link {{ 'active' if request.endpoint == 'index' }}">Главная</a></li>
+      <li><a href="{{ url_for('news') }}" class="{{ 'active' if request.endpoint in ['news','news_detail'] }}">Новости</a></li>
+      <li><a href="{{ url_for('services') }}" class="{{ 'active' if request.endpoint == 'services' }}">Услуги</a></li>
+      <li><a href="{{ url_for('documents') }}" class="{{ 'active' if request.endpoint == 'documents' }}">Документы</a></li>
+      <li><a href="{{ url_for('legislation') }}" class="{{ 'active' if request.endpoint == 'legislation' }}">Законодательство</a></li>
+      <li><a href="{{ url_for('residents') }}" class="{{ 'active' if request.endpoint == 'residents' }}">Жильцам</a></li>
+      <li><a href="{{ url_for('faq') }}" class="{{ 'active' if request.endpoint == 'faq' }}">FAQ</a></li>
+      <li><a href="{{ url_for('about') }}" class="{{ 'active' if request.endpoint == 'about' }}">О комитете</a></li>
+      <li><a href="{{ url_for('contacts') }}" class="{{ 'active' if request.endpoint == 'contacts' }}">Контакты</a></li>
+    </ul>
+  </div>
+</nav>
+
+<!-- FLASH MESSAGES -->
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    <div class="container" style="padding-top:16px;">
+      {% for cat, msg in messages %}
+        <div class="alert alert-{{ cat }}">
+          {% if cat == 'success' %}✅{% elif cat == 'danger' %}❌{% elif cat == 'info' %}ℹ️{% else %}⚠️{% endif %}
+          {{ msg }}
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+{% endwith %}
+
+<!-- MAIN -->
+<main>
+  {% block content %}{% endblock %}
+</main>
+
+<!-- FOOTER -->
+<footer class="site-footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-col">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px;">
+          <div class="logo-emblem" style="width:44px;height:44px;font-size:16px;">ЖК</div>
+          <div>
+            <div style="color:#fff;font-family:'Playfair Display',serif;font-size:16px;font-weight:700;">Жилищный комитет</div>
+            <div style="font-size:12px;color:rgba(255,255,255,0.5);">Официальный портал</div>
+          </div>
+        </div>
+        <p>Государственный орган, осуществляющий функции в сфере жилищной политики, жилищно-коммунального хозяйства и благоустройства территорий.</p>
+        <p style="margin-top:10px;font-size:13px;">📍 ул. Советская, д. 1, каб. 101<br>
+        📞 8-800-100-10-10 (бесплатно)<br>
+        ✉ info@housing-committee.ru</p>
+      </div>
+      <div class="footer-col">
+        <h4>Услуги</h4>
+        <ul class="footer-links">
+          <li><a href="{{ url_for('services') }}">Все услуги</a></li>
+          <li><a href="{{ url_for('apply') }}">Подать обращение</a></li>
+          <li><a href="{{ url_for('documents') }}">Документы</a></li>
+          <li><a href="{{ url_for('legislation') }}">Законодательство</a></li>
+          <li><a href="{{ url_for('faq') }}">Часто задаваемые вопросы</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Навигация</h4>
+        <ul class="footer-links">
+          <li><a href="{{ url_for('index') }}">Главная</a></li>
+          <li><a href="{{ url_for('news') }}">Новости</a></li>
+          <li><a href="{{ url_for('residents') }}">Жильцам</a></li>
+          <li><a href="{{ url_for('about') }}">О комитете</a></li>
+          <li><a href="{{ url_for('contacts') }}">Контакты</a></li>
+          <li><a href="{{ url_for('sitemap') }}">Карта сайта</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Кабинет</h4>
+        <ul class="footer-links">
+          {% if current_user.is_authenticated %}
+            <li><a href="{{ url_for('cabinet') }}">Мои обращения</a></li>
+            <li><a href="{{ url_for('messages') }}">Сообщения</a></li>
+            <li><a href="{{ url_for('apply') }}">Новое обращение</a></li>
+            <li><a href="{{ url_for('logout') }}">Выйти</a></li>
+          {% else %}
+            <li><a href="{{ url_for('login') }}">Войти</a></li>
+            <li><a href="{{ url_for('register') }}">Регистрация</a></li>
+            <li><a href="{{ url_for('apply') }}">Подать обращение</a></li>
+          {% endif %}
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 Жилищный комитет. Все права защищены.</span>
+      <span>Разработано в соответствии с требованиями ГОСТ Р 52872-2012</span>
+      <a href="{{ url_for('sitemap') }}" style="color:rgba(255,255,255,0.4);">Карта сайта</a>
+    </div>
+  </div>
+</footer>
+
+<button id="backTop" title="Наверх" aria-label="Вернуться наверх">↑</button>
+
+<script src="{{ url_for('static', filename='js/main.js') }}"></script>
+{% block extra_js %}{% endblock %}
+</body>
+</html>

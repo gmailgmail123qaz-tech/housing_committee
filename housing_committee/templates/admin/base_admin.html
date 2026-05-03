@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="admin-layout">
+  <div class="admin-sidebar">
+    <div class="sidebar-section-title">Управление</div>
+    <ul class="sidebar-nav">
+      <li><a href="{{ url_for('admin_dashboard') }}" class="{{ 'active' if request.endpoint == 'admin_dashboard' }}">📊 Дашборд</a></li>
+      <li><a href="{{ url_for('admin_applications') }}" class="{{ 'active' if 'application' in request.endpoint }}">📋 Обращения</a></li>
+      <li><a href="{{ url_for('admin_messages') }}" class="{{ 'active' if 'message' in request.endpoint }}">💬 Сообщения</a></li>
+    </ul>
+    <div class="sidebar-section-title">Контент</div>
+    <ul class="sidebar-nav">
+      <li><a href="{{ url_for('admin_news') }}" class="{{ 'active' if request.endpoint == 'admin_news' }}">📰 Новости</a></li>
+      <li><a href="{{ url_for('admin_articles') }}" class="{{ 'active' if request.endpoint == 'admin_articles' }}">📄 Статьи</a></li>
+    </ul>
+    <div class="sidebar-section-title">Система</div>
+    <ul class="sidebar-nav">
+      <li><a href="{{ url_for('admin_users') }}" class="{{ 'active' if request.endpoint == 'admin_users' }}">👥 Пользователи</a></li>
+      <li><a href="{{ url_for('index') }}">🌐 На сайт</a></li>
+    </ul>
+  </div>
+  <div class="admin-content">
+    {% block admin_content %}{% endblock %}
+  </div>
+</div>
+{% endblock %}
